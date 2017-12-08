@@ -12,6 +12,11 @@
                 this.$http.get('/users').then(function (json) {
                     console.log(json);
                 })
+            },
+            getPort: function () {
+                this.$http.get('/getPort').then(function (json) {
+                    console.log(json);
+                })
             }
         }
     })
