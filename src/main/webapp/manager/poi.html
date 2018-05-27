@@ -5,6 +5,7 @@
     <title>POI</title>
     <script src="../lib/vue/vue.js" type="application/javascript"></script>
     <script src="../lib/vue/vue-resource.js" type="application/javascript"></script>
+    <script src="../lib/jquery.min.js"></script>
     <script>
         // var poi = new Vue({
         //     el: '.poiBtn',
@@ -24,8 +25,8 @@
         //         }
         //     }
         // });
-        Vue.http.get('/exportExcel').then(function (json) {
-            console.log(json);
+        $.getJSON('/exportExcel', function (data) {
+            console.log(data)
         })
     </script>
 </head>

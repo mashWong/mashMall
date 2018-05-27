@@ -32,8 +32,8 @@ public class ExportBeanExcel<T> {
      *  dtoList     需要显示的数据集合,集合中一定要放置符合javabean风格的类的对象
      *  out         与输出设备关联的流对象，可以将EXCEL文档导出到本地文件或者网络中
      */
-    private void exportExcel(String title, List<String> headersName,List<String> headersId,
-                             List<T> dtoList, HttpServletResponse response) {
+    public HSSFWorkbook exportExcel(String title, List<String> headersName, List<String> headersId,
+                                    List<T> dtoList) {
         /*（一）表头--标题栏*/
         Map<Integer, String> headersNameMap = new HashMap<>();
         int key=0;
@@ -120,41 +120,7 @@ public class ExportBeanExcel<T> {
                 }
             }
         }
-        try {
-            OutputStream output=response.getOutputStream();
-            response.reset();
-            response.setHeader("Content-disposition", "attachment; filename="+ URLEncoder.encode(title, "utf-8"));
-            response.setContentType("application/msexcel");
-            wb.write(output);
-            output.close();
-        } catch (FileNotFoundException e) {
-            System.out.println("导出失败!");
-            e.printStackTrace();
-        } catch (IOException e) {
-            System.out.println("导出失败!");
-            e.printStackTrace();
-        }
-    }
-    /*
-        使用例子
-    */
-    public void ex(HttpServletResponse response){
-        List<String> listName = new ArrayList<>();
-        listName.add("id");
-        listName.add("名字");
-        listName.add("性别");
-        List<String> listId = new ArrayList<>();
-        listId.add("id");
-        listId.add("name");
-        listId.add("sex");
-        List<user> list = new ArrayList<>();
-        list.add(new user(111,"张三asdf","男"));
-        list.add(new user(111,"李四asd","男"));
-        list.add(new user(111,"王五","女"));
 
-
-        ExportBeanExcel<user> exportBeanExcelUtil = new ExportBeanExcel();
-        exportBeanExcelUtil.exportExcel("测试POI导出EXCEL文档",listName,listId,list,response);
-
+        return wb;
     }
 }

@@ -33,8 +33,33 @@ public class poiController{
 
     @RequestMapping(value = "/exportExcel", method = RequestMethod.GET)
     public void index(HttpServletRequest request, HttpServletResponse response) {
+        List<String> listName = new ArrayList<>();
+        listName.add("id");
+        listName.add("名字");
+        listName.add("性别");
+        List<String> listId = new ArrayList<>();
+        listId.add("id");
+        listId.add("name");
+        listId.add("sex");
+        List<user> list = new ArrayList<>();
+        list.add(new user(111,"张三asdf","男"));
+        list.add(new user(111,"李四asd","男"));
+        list.add(new user(111,"王五","女"));
 
         ExportBeanExcel<user> exportBeanExcel = new ExportBeanExcel();
-        exportBeanExcel.ex(response);
+        HSSFWorkbook wb = exportBeanExcel.exportExcel("测试POI导出EXCEL文档",listName,listId,list);
+
+
+        OutputStream output= null;
+        try {
+            output = response.getOutputStream();
+            response.reset();
+            response.setHeader("Content-disposition", "attachment; filename="+ URLEncoder.encode("sdfsdf.xls", "utf-8"));
+            response.setContentType("application/xls");
+            wb.write(output);
+            output.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
