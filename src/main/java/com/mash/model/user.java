@@ -14,6 +14,9 @@ public class user {
 
     private String headIcon;
 
+    public user(int i, String 张三asdf, String 男) {
+    }
+
     public String getUserId() {
         return userId;
     }

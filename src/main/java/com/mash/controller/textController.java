@@ -81,8 +81,8 @@ public class textController extends UserService {
             System.out.println("onOpen");
         }
         /*
-             *使用@OnMessage注解的表示当客户端发送消息后的回掉，第一个参数表示用户发送的数据。参数Session是可选参数，与OnOpen方法中的session是一致的
-             */
+        *使用@OnMessage注解的表示当客户端发送消息后的回掉，第一个参数表示用户发送的数据。参数Session是可选参数，与OnOpen方法中的session是一致的
+        */
         @OnMessage
         public void onMessage(String message,Session session){
             //这里当然会打印true

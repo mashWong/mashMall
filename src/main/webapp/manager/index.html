@@ -1,62 +1,142 @@
-<!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="pub/css/head.css">
+    <link rel="stylesheet" href="pub/css/date.css">
+    <script type="application/javascript" src="pub/top.js"></script>
     <title>后台管理</title>
-    <script src="../lib/vue/vue.js" type="application/javascript"></script>
-    <script src="../lib/vue/vue-resource.js" type="application/javascript"></script>
 </head>
 <body>
+<!-- 头部 -->
+<div class="header">
+    <div class="hosName">
+        <div v-show="name" v-text="userInfo.yljgmc" style="margin-top: 10px;"></div>
+        <img v-show="!name" src="pub/image/logo.png">
+    </div>
 
-<script type="text/javascript">
-    var ws = new WebSocket("ws://localhost:8011/webSocket");
-    /*
-     *监听三种状态的变化 。js会回调
-     */
-    ws.onopen = function(message) {
-
-    };
-    ws.onclose = function(message) {
-
-    };
-    ws.onmessage = function(message) {
-        showMessage(message.data);
-    };
-    //监听窗口关闭事件，当窗口关闭时，主动去关闭websocket连接，防止连接还没断开就关闭窗口，server端会抛异常。
-    window.onbeforeunload = function() {
-        ws.close();
-    };
-    //关闭连接
-    function closeWebSocket() {
-        ws.close();
-    }
-    //发送消息
-    function send() {
-        var input = document.getElementById("msg");
-        var text = input.value;
-        ws.send(text);
-        input.value = "";
-    }
-    function showMessage(message) {
-        var text = document.createTextNode(message);
-        var br = document.createElement("br");
-        var div = document.getElementById("showChatMessage");
-        div.appendChild(text);
-        div.appendChild(br);
-    }
-</script>
-<div style="width: 600px; height: 240px; overflow-y: auto; border: 1px solid #333;"
-        id="show">
-    <div id="showChatMessage"></div>
-    <input type="text" size="80" id="msg" name="msg" placeholder="输入聊天内容" />
-    <input type="button" value="发送" id="sendBn" name="sendBn"
-           onclick="send()">
+    <div class="modTitle" @click.stop="showModular()">
+        <div v-text="menuTitle"></div>
+        <div v-show="showMod" class="fa fa-sort-desc"></div>
+        <div v-show="!showMod" class="fa fa-sort-desc"></div>
+    </div>
+    <div class="account">
+        <div class="scheduleDiv">
+            <div class="schedule"></div>
+            <span>待办事项</span>
+            <div class="msg">3</div>
+        </div>
+        <div class="messageDiv">
+            <div class="message"></div>
+            <span>通知</span>
+            <div class="msg">1</div>
+        </div>
+        <div class="user">
+            <div class="imgDiv">
+                <img src="pub/image/girl.png">
+            </div>
+            <span v-text="userInfo.czyxm"></span>
+            <div class="triangle"></div>
+            <div class="userInfo">
+                <div><img src="pub/image/person.png">个人资料</div>
+                <div @click="changePsw()"><img src="pub/image/password.png">密码管理</div>
+                <div><img src="pub/image/loginOut.png">退出</div>
+            </div>
+        </div>
+    </div>
+    <div class="cut"></div>
+    <div class="con-search">
+        <transition name="left-fade">
+            <input :autofocus="showSearch" @blur="hideSearch()" v-if="showSearch"
+                   placeholder="请输入搜索内容…">
+        </transition>
+        <div @click="toSearch()">
+            <img class="searchIcon" :src="searchUrl">
+            <span v-show="!showSearch">搜索</span>
+        </div>
+    </div>
 </div>
 
-<div class="test">
-    <button @click="getData">测试</button>
-    <button @click="getPort">port</button>
+<!-- 主菜单 -->
+<div class="modularDiv" v-show="isShow">
+    <div v-for="item in moduleList" :key="item.mkbm" @click="loadMenu(item.mkbm, item.mkmc, item.iconame)">
+        <!--<img :src="iconUrl+item.iconame" />-->
+        <span style="font-size: 16px" v-text="item.mkmc"></span>
+    </div>
 </div>
+
+<!-- 正文 -->
+<div id="indexCon">
+    <div class="leftMenu">
+        <div class="menu">
+            <li style="height: 42px">
+                <i :class="{'foldIcon_green': isFold}" @click="menuFolding" class="fa fa-reorder foldIcon"></i>
+            </li>
+            <li v-for="(item, $index) in menuData" :key="item.mkbm">
+                <div @click="loadChildMenu(item.mkbm)">
+                    <img :src="iconNameUrl+item.iconame" v-if="showFa[$index] == false"/>
+                    <span class="menuIcon fa" :class="item.iconame.split('&')[0]"
+                          :style="{color: item.iconame.split('&')[1]}" v-if="showFa[$index]"></span>
+                    <span v-show="!isFold" class="menu-font" v-text="item.mkmc"></span>
+                    <span v-show="!isFold" class="fa fa-angle-right arrowIcon"></span>
+                </div>
+                <ul :id="item.mkbm" v-show="!isFold">
+                    <li v-for="(itemLi, $index) in item.userYlqxModel" :key="item.mkbm"
+                        @click="loadCon(item.mkbm,$index,itemLi.ylmc,itemLi.url)"
+                        v-text="itemLi.ylmc">
+                    </li>
+                </ul>
+            </li>
+        </div>
+    </div>
+
+    <div class="rightMenu">
+        <div class="contextTitle">
+            <div class="conTitle" v-text="conTitle"></div>
+            <div class="titleList">
+                <div class="leftHide" @click="move('right')" onselectstart="return false;"><img src="pub/image/pve.png">
+                </div>
+                <div class="titleCon">
+                    <div>
+                        <div class="tabCon homePage">首页</div>
+                        <transition-group name="expand">
+                            <div class="tabCon" v-for="(item, $index) in pageLists"
+                                 :key="item" :transition="'expand'"
+                                 :class="{'bgChange':isSelect == $index}"
+                                 @click="isSelect = $index">
+                                <span class="fa fa-times-circle bookMarkRemove" @click.stop="removePage($index)"></span>
+                                <span v-text="item.name"></span>
+                            </div>
+                        </transition-group>
+                    </div>
+                </div>
+                <div class="rightHide" @click="move('left')" onselectstart="return false;"><img
+                        src="pub/image/next.png"></div>
+            </div>
+        </div>
+
+        <div id="iframeCon">
+            <!--:model为要操作的值，:model_name为要操作值得名称，:time为是否要操作时分秒，-->
+            <!--:section为是否要选择时间段，@result为返回的方法特殊操作可自定义方法-->
+            <!--<calendar :model="testDate" :model_name="'testDate'" :time="false"-->
+            <!--:section="false" @result="resultFun">-->
+            <!--</calendar>-->
+            <input id="this_user_id" style="display: none" value="">
+            <iframe v-show="isSelect == $index" v-for="(item,$index) in pageLists" :key="item.url" :src="item.url">
+                <script type="application/javascript" src="/pub/top.js"></script>
+            </iframe>
+        </div>
+
+        <div @click="refresh()" class="refresh" title="刷新">
+            <img src="/pub/image/refresh.png">
+        </div>
+    </div>
+</div>
+
+<!--尾部-->
+<!--<div class="tail"></div>-->
 </body>
-<script src="index.js" type="application/javascript"></script>
+<script type="text/javascript" src="index.js"></script>
+<script>
+    $("#this_user_id").val(window.location.search);
+</script>
 </html>

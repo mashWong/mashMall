@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>POI</title>
+    <script src="../lib/vue/vue.js" type="application/javascript"></script>
+    <script src="../lib/vue/vue-resource.js" type="application/javascript"></script>
+    <script>
+        // var poi = new Vue({
+        //     el: '.poiBtn',
+        //     data: {
+        //
+        //     },
+        //     create: function(){
+        //         this.$http.get('/exportExcel').then(function (json) {
+        //             console.log(json);
+        //         })
+        //     },
+        //     method: {
+        //         doPoi: function () {
+        //             this.$http.get('/exportExcel').then(function (json) {
+        //                 console.log(json);
+        //             })
+        //         }
+        //     }
+        // });
+        Vue.http.get('/exportExcel').then(function (json) {
+            console.log(json);
+        })
+    </script>
+</head>
+<body>
+<button class="poiBtn" @click="doPoi()">下载</button>
+</body>
+<script type="text/javascript" src="poi.js"></script>
+</html>

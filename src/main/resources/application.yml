@@ -1,5 +1,5 @@
 server:
-  port: 8011
+  port: 8012
   session:
     timeout: 10
   tomcat:
